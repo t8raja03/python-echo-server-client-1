@@ -2,7 +2,7 @@ import socket
 import threading
 
 ## Socketin konfiguraatio:
-PORT = 1026
+PORT = 23456
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 
