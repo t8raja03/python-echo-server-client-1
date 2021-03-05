@@ -9,7 +9,7 @@ from os import system
 ## käynnistetään
 
 ## Yhteyden tiedot, vastaa serverin PORT ja SERVER muuttujia
-HOST = '192.168.1.101'
+HOST = '192.168.1.12'
 PORT = 23456
 SERVER = (HOST, PORT)
 
@@ -34,6 +34,7 @@ def listen_messages(sock):
                 print(f"{user}: {msg}")
         except ValueError:
             pass
+        
 
 
 ## connect() yhdistää palvelimeen ja hoitaa viestien lähettämisen
@@ -44,7 +45,7 @@ def connect():
         try:
             sock.sendall(msg)
         ## Jos palvelin on suljettu (=kaatunut...), lopetetaan
-        except ConnectionResetError:
+        except (ConnectionResetError, BrokenPipeError):
             print("Server closed the connection, exiting.")
             exit()
 
@@ -74,26 +75,36 @@ def connect():
             header_user = f"{username:<{H_USER}}".encode(FORMAT)
             header_len = f"{len(message):<{H_LEN}}".encode(FORMAT)
 
-        ## Lopettaminen tapahtuu Ctrl+D (EOFError) tai Ctrl+C (KeyboardInterrupt)
-        ## painamalla
-        except EOFError or KeyboardInterrupt:
+        ## Lopettaminen voi tapahtuu painamalla Ctrl+D (EOFError)
+        except EOFError:
             message = DISCONNECT_MESSAGE
             header_user = f"{username:<{H_USER}}".encode(FORMAT)
             header_len = f"{len(message):<{H_LEN}}".encode(FORMAT)
             print("Disconnected.")
             exit()
+        except:
+            exit()
 
         ## kasataan ja lähetetään viesti
-        message = header_user + header_len + message.encode(FORMAT)
-        send(message)
+        if message:
+            message = header_user + header_len + message.encode(FORMAT)
+            send(message)
         
 
 
 
 
 if __name__ == "__main__":
-    system('clear -x')
+    system('clear -x')      ## Näyttö tyhjäksi
     client_thread = threading.Thread(target=connect, args=())
+    ## Threadi daemoniksi, jotta saadaan käsiteltyä myös Ctrl+C
+    client_thread.daemon = True
     client_thread.start()
+    try:
+        ## Liitytään client_threadiin, ohjelma jää käyntiin vaikka daemon = True
+        client_thread.join()
+    except KeyboardInterrupt:
+        print('Disconnecting.')
+        exit()
 
 
