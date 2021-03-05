@@ -9,7 +9,7 @@ from os import system
 ## käynnistetään
 
 ## Yhteyden tiedot, vastaa serverin PORT ja SERVER muuttujia
-HOST = '192.168.1.12'
+HOST = '192.168.1.101'
 PORT = 23456
 SERVER = (HOST, PORT)
 
