@@ -104,7 +104,7 @@ if __name__ == "__main__":
         ## Liitytään client_threadiin, ohjelma jää käyntiin vaikka daemon = True
         client_thread.join()
     except KeyboardInterrupt:
-        print('Disconnecting.')
+        print("\nDisconnecting.")
         exit()
 
 

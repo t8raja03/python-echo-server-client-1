@@ -50,7 +50,7 @@ def read_message(conn):
 
     ## ValueError tulee, jos luetaan tyhjää viestiä, ConnectionReset jos
     ## client on katkaissut yhteyden
-    except ValueError or ConnectionResetError:
+    except (ValueError, ConnectionResetError):
         return Message(user, len(DISCONNECT_MESSAGE), DISCONNECT_MESSAGE)
 
 
@@ -77,7 +77,13 @@ def client_thread(client):
 
     while True:
         ## Luetaan viesti
-        message = read_message(conn)
+        try:
+            message = read_message(conn)
+        except Exception as e:
+            ## Jos ei yhteyttä clientiin
+            print(f"Connection lost to {addr}")
+            clients.remove(client)
+
 
         ## Lähetetään viesti edelleen, parametrina vastaanottanut yhteys
         forward_message(message, client)
