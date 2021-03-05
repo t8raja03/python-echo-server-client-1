@@ -75,25 +75,33 @@ def client_thread(client):
     print(f"[+] {addr} connected")
     print(f"[i] {len(clients)} client(s) active")
 
+    join_message = f"[+] {addr} connected"
+    forward_message(Message('root', len(join_message), join_message), client)
+
     while True:
         ## Luetaan viesti
         try:
             message = read_message(conn)
-        except Exception as e:
+        except Exception:
             ## Jos ei yhteyttä clientiin
             print(f"Connection lost to {addr}")
             clients.remove(client)
+            break
 
 
-        ## Lähetetään viesti edelleen, parametrina vastaanottanut yhteys
-        forward_message(message, client)
+        
 
         ## Yhteyden katkaisu
         if message.message == DISCONNECT_MESSAGE:
+            disconnect_message = f"[-] {addr} disconnected"
+            forward_message(Message('root', len(disconnect_message), disconnect_message), client)
             print(f"[-] {addr} disconnected")
             clients.remove(client)
             print(f"[i] {len(clients)} client(s) active")
             return
+        else:
+            ## Lähetetään viesti edelleen, parametrina vastaanottanut yhteys
+            forward_message(message, client)
 
         print(f"{message.user} @ [{addr}] : {message.message} ")
 
