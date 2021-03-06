@@ -13,7 +13,9 @@ ADDR = (SERVER, PORT)
 DISCONNECT_MESSAGE = ">X<"   ## Tällä viestillä katkaistaan yhteys
 FORMAT = 'iso8859_10'               ## utf_8 aiheutti virheitä öökkösten kanssa
 
-## Header on selitetty client-tiedostossa tarkemmin
+## Header on 16 byteä + 8 byteä, siinä kulkee käyttäjänimi ja viestin pituus
+## koko viesti esim:
+## b'jarno           5       terve'
 H_LEN = 8
 H_USER = 16
 
